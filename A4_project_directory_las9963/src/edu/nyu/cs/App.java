@@ -12,8 +12,12 @@ import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.util.stream.Collectors;
+
+import javax.annotation.processing.Filer;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.ObjectUtils.Null;
 
 import java.util.regex.Matcher;
 
@@ -75,7 +79,7 @@ public class App extends PApplet {
 		} else if(key == '6'){
 			customVisualization2(data);
 		} else{
-			System.out.println("Invalid operation")
+			System.out.println("Invalid Operation");
 		}
 	
 		// complete this method
@@ -92,20 +96,34 @@ public class App extends PApplet {
 	public void showMay2021MorningCounts(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "May 2021 Morning Pedestrian Counts";
+		int pedestrianCountIndex = data[0].length - 2;
+
+		for(int i = 1; i < data.length; i++){
+			float lat = Float.parseFloat(data[i][2]);
+			float lng = Float.parseFloat(data[i][3]);
+			int pedestrianCount = Integer.parseInt(data[i][pedestrianCountIndex]);
+
+			Location markerLocation = new Location(lat, lng);
+			float markerRadius = pedestrianCount * SCALE_FACTOR;
+			float[] markerColor = {255, 0, 0, 127};
+			MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+			map.addMarker(marker);
+		}
+	}
 
 		// complete this method - DELETE THE EXAMPLE CODE BELOW
 
 		// remove the code below and replace with your own code that solves the problem indicated in the comments
 		// example of how to create a marker at a specific location and place it on the map
-		float lat = 40.737375365084105f; // latitude of a location of interest
-		float lng = -74.00101207586745f; // longitude of a location of interest
-		Location markerLocation = new Location(lat, lng); // create a Location object
-		int pedestrianCount = 11024; // an example pedestrian count (in reality, you will get these from a file)
-		float markerRadius = pedestrianCount * SCALE_FACTOR; // scale down the marker radius to look better on the map
-		float[] markerColor = {255, 0, 0, 127}; // a color, specified as a combinatino of red, green, blue, and alpha (i.e. transparency), each represented as numbers between 0 and 255.
-		MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor); // don't worry about the `this` keyword for now... just make sure it's there.
-		map.addMarker(marker);
-	}
+	// 	float lat = 40.737375365084105f; // latitude of a location of interest
+	// 	float lng = -74.00101207586745f; // longitude of a location of interest
+	// 	Location markerLocation = new Location(lat, lng); // create a Location object
+	// 	int pedestrianCount = 11024; // an example pedestrian count (in reality, you will get these from a file)
+	// 	float markerRadius = pedestrianCount * SCALE_FACTOR; // scale down the marker radius to look better on the map
+	// 	float[] markerColor = {255, 0, 0, 127}; // a color, specified as a combinatino of red, green, blue, and alpha (i.e. transparency), each represented as numbers between 0 and 255.
+	// 	MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor); // don't worry about the `this` keyword for now... just make sure it's there.
+	// 	map.addMarker(marker);
+	// }
 
 	/**
 	 * Adds markers to the map for the evening pedestrian counts in May 2021.
@@ -175,6 +193,29 @@ public class App extends PApplet {
 	 * @throws FileNotFoundException
 	 */
 	public String[] getLinesFromFile(String filepath) {
+		String path = "data/PedCountLocationsMay2015.csv";
+
+		try{
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			List<String> lines = new ArrayList<>();
+			String line = null;
+
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+			//make new empty array
+			String[][] a = new String[89][115];
+			//iterate through all lines and store each line into an array
+			for(int i = 0; i < lines.get(0).length(); i++){
+				 a[i] = lines.get(i).split(",");
+				 System.out.println(a[0][0]);
+			}
+			reader.close();
+		} catch (FileNotFoundException e){
+			System.out.println("File not found exception");
+		} catch (IOException e){
+			System.out.println("IO Exception");
+		}
 		String[] lines = {"foo", "bar"};
 		return lines;
 		// delete the two lines above... they are placeholder only
@@ -191,23 +232,16 @@ public class App extends PApplet {
 	 * @return A two-dimensional String array, where each inner array contains the data from one of the lines, split by commas.
 	 */
 	public String[][] getDataFromLines(String[] lines) {
-		// complete this method - DELETE THE EXAMPLE CODE BELOW]
 		String path = "data/PedCountLocationsMay2015.csv";
-		String delimiter = ",";
-		String line = "";
-		try{
-			BufferedReader br = new BufferedReader(new FileReader(path));
+		String[][] data = new String[lines.length][];
 
-			while((line = br.readLine()) != null){
-				String[] values = line.split(delimiter);
-				System.out.println(values[1]);
-				//break;
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
-		} catch (IOException e){
-			System.out.println("Not working");
+		for(int row = 0; row <lines.length; row++){
+			data[row] = lines[row].split(",");
 		}
+		System.out.println("HELLO");
+		// System.out.println(data);
+		return(data);
+	}
 		// hint: ultimately, you want this function to return data structured something like the following (you can structure your array differently if you prefer)
 		// in this example, the geospatial Point data (latitude and longitude), which is one field in the original CSV file, has been broken up into two fields... you would be wise to do this too.
 		String[][] allLines = { 
@@ -217,9 +251,9 @@ public class App extends PApplet {
 			{"-73.92785197149036","40.80034506063933","Harlem River Bridges","113","113","Triborough Bridge (Manhattan span)","midpoint","","N","17","35","34","11","44","24","30","44","16","30","200","23","37","44","23","20","174","66","12","39","55","36","205","64","10","45","11","7","119","39","26","21","49","6","33","15","12","42","16","13","31","40","14","32","10","21","42","20","19","36","14","17","40","28","10","18","8","21","43","21","7","19","5","16","38","24","6","14","4","12","15","6","","","","","","","23","52","6437"},
 			{"-73.93686603590555","40.78611224350854","Harlem River Bridges","114","114","Wards Island Bridge","midpoint","","N","57","207","71","63","186","149","45","203","113","80","190","120","33","213","324","43","151","173","37","169","674","77","205","913","32","66","70","62","189","936","78","249","439","102","460","569","191","455","435","92","514","594","164","527","312","123","458","564","189","539","312","117","424","581","160","484","300","159","490","587","169","493","312","178","519","608","187","543","351","213","490","263","","","","","","","237","405","6353"}
 		};
-		return allLines;
 
-	}
+
+	
 
 
 	/****************************************************************/

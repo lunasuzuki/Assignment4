@@ -1,7 +1,7 @@
 package edu.nyu.cs;
 
 // some basic java imports
-import java.io.File;
+// import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -67,6 +67,7 @@ public class App extends PApplet {
 		keyP.keyPressed(key, 0);
 		System.out.println(key);
 		if(key == '1'){
+			map.zoomLevelOut();
 			showMay2021MorningCounts(data);
 		} else if(key == '2'){
 			showMay2021EveningCounts(data);
@@ -75,17 +76,15 @@ public class App extends PApplet {
 		} else if(key == '4'){
 			showMay2021VersusMay2019Counts(data);
 		} else if(key == '5'){
-			customVisualization1(data);
+			customVisualization2007Morning(data);
 		} else if(key == '6'){
-			customVisualization2(data);
+			customVisualization2007Evening(data);
 		} else{
 			System.out.println("Invalid Operation");
 		}
 	
 		// complete this method
 	}
-
-
 
 	/**
 	 * Adds markers to the map for the morning pedestrian counts in May 2021.
@@ -96,34 +95,40 @@ public class App extends PApplet {
 	public void showMay2021MorningCounts(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "May 2021 Morning Pedestrian Counts";
-		int pedestrianCountIndex = data[0].length - 2;
+		int pedestrianCountIndex = data[0].length - 3;
+		//remove the code below and replace with your own code that solves the problem indicated in the comments
+		//example of how to create a marker at a specific location and place it on the map
+		// float lat = 40.737375365084105f; // latitude of a location of interest
+		// float lng = -74.00101207586745f; // longitude of a location of interest
+		// Location markerLocation = new Location(lat, lng); // create a Location object
+		// int pedestrianCount = 11024; // an example pedestrian count (in reality, you will get these from a file)
+		// float markerRadius = pedestrianCount * SCALE_FACTOR; // scale down the marker radius to look better on the map
+		// float[] markerColor = {255, 0, 0, 127}; // a color, specified as a combinatino of red, green, blue, and alpha (i.e. transparency), each represented as numbers between 0 and 255.
+		// MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor); // don't worry about the `this` keyword for now... just make sure it's there.
+		// map.addMarker(marker);
 
-		for(int i = 1; i < data.length; i++){
-			float lat = Float.parseFloat(data[i][2]);
-			float lng = Float.parseFloat(data[i][3]);
-			int pedestrianCount = Integer.parseInt(data[i][pedestrianCountIndex]);
-
+		for(int i = 0; i < data.length; i++){
+			// float lat = 40.737375365084105f;
+			// float lng = -74.00101207586745f;
+			float lat = Float.parseFloat(data[i][0]);
+			float lng = Float.parseFloat(data[i][1]);
+			System.out.println(lat + " " + lng);
+			int pedestrianCount = -1;
+			try{
+				pedestrianCount = Integer.parseInt(data[i][pedestrianCountIndex]);
+			} catch(Exception e){
+				pedestrianCount = 0;
+			}
+			
 			Location markerLocation = new Location(lat, lng);
 			float markerRadius = pedestrianCount * SCALE_FACTOR;
-			float[] markerColor = {255, 0, 0, 127};
+			float[] markerColor = {0, 0, 255, 127};
 			MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
 			map.addMarker(marker);
 		}
-	}
 
-		// complete this method - DELETE THE EXAMPLE CODE BELOW
-
-		// remove the code below and replace with your own code that solves the problem indicated in the comments
-		// example of how to create a marker at a specific location and place it on the map
-	// 	float lat = 40.737375365084105f; // latitude of a location of interest
-	// 	float lng = -74.00101207586745f; // longitude of a location of interest
-	// 	Location markerLocation = new Location(lat, lng); // create a Location object
-	// 	int pedestrianCount = 11024; // an example pedestrian count (in reality, you will get these from a file)
-	// 	float markerRadius = pedestrianCount * SCALE_FACTOR; // scale down the marker radius to look better on the map
-	// 	float[] markerColor = {255, 0, 0, 127}; // a color, specified as a combinatino of red, green, blue, and alpha (i.e. transparency), each represented as numbers between 0 and 255.
-	// 	MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor); // don't worry about the `this` keyword for now... just make sure it's there.
-	// 	map.addMarker(marker);
-	// }
+		//complete this method - DELETE THE EXAMPLE CODE BELOW
+}
 
 	/**
 	 * Adds markers to the map for the evening pedestrian counts in May 2021.
@@ -135,7 +140,27 @@ public class App extends PApplet {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "May 2021 Evening Pedestrian Counts";
 		// complete this method
-	}
+		int pedestrianCountIndex = data[0].length - 2;
+
+		for(int i = 0; i < data.length; i++){
+			float lat = 0;
+			float lng = 0;
+			int pedestrianCount = 0;
+
+			try {
+				lat = Float.parseFloat(data[i][2]);
+				lng = Float.parseFloat(data[i][3]);
+				pedestrianCount = Integer.parseInt(data[i][pedestrianCountIndex]);
+			} catch (NumberFormatException e) {
+				continue;
+			}
+			Location markerLocation = new Location(lat, lng);
+			float markerRadius = pedestrianCount * SCALE_FACTOR;
+			float[] markerColor = {255, 0, 0, 127};
+			MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+			map.addMarker(marker);
+		}
+}
 
 	/**
 	 * Adds markers to the map for the difference between evening and morning pedestrian counts in May 2021.
@@ -146,6 +171,22 @@ public class App extends PApplet {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "Difference Between May 2021 Evening and Morning Pedestrian Counts";
 		// complete this method
+		int eveningCountIndex = data[0].length - 2;
+		int morningCountIndex = data[0].length - 1;
+
+		for (int i = 1; i < data.length; i++) {
+			float lat = Float.parseFloat(data[i][2]);
+			float lng = Float.parseFloat(data[i][3]);
+			int eveningCount = Integer.parseInt(data[i][eveningCountIndex]);
+			int morningCount = Integer.parseInt(data[i][morningCountIndex]);
+			int countDifference = eveningCount - morningCount;
+
+			Location markerLocation = new Location(lat, lng);
+			float markerRadius = Math.abs(countDifference) * SCALE_FACTOR;
+			float[] markerColor = (countDifference > 0) ? new float[] {0, 255, 0, 127} : new float[] {255, 0, 0, 127};
+			MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+			map.addMarker(marker);
+		}
 	}
 
 	/**
@@ -159,6 +200,61 @@ public class App extends PApplet {
 		clearMap(); // clear any markers previously placed on the map
 		mapTitle = "Difference Between May 2021 and May 2019 Pedestrian Counts";
 		// complete this method
+
+		int may2021Index = -1;
+		int may2019Index = -1;
+		for (int i = 0; i < data[0].length; i++) {
+			if (data[0][i].equals("May 2021 Pedestrian Count")) {
+				may2021Index = i;
+			} else if (data[0][i].equals("May 2019 Pedestrian Count")) {
+				may2019Index = i;
+			}
+		}
+
+		int may2021TotalCount = 0;
+		int may2021Count = 0;
+		for (int i = 1; i < data.length; i++) {
+			String countStr = data[i][may2021Index];
+			if (!countStr.equals("")) {
+				int count = Integer.parseInt(countStr);
+				may2021TotalCount += count;
+				may2021Count++;
+			}
+		}
+		float may2021Average = (float) may2021TotalCount / may2021Count;
+
+		int may2019TotalCount = 0;
+		int may2019Count = 0;
+		for (int i = 1; i < data.length; i++) {
+			String countStr = data[i][may2019Index];
+			if (!countStr.equals("")) {
+				int count = Integer.parseInt(countStr);
+				may2019TotalCount += count;
+				may2019Count++;
+			}
+		}
+
+		float may2019Average = (float) may2019TotalCount / may2019Count;
+		for (int i = 1; i < data.length; i++) {
+			String latStr = data[i][2];
+			String lngStr = data[i][3];
+			String may2021CountStr = data[i][may2021Index];
+			String may2019CountStr = data[i][may2019Index];
+
+			if (!latStr.equals("") && !lngStr.equals("") && !may2021CountStr.equals("") && !may2019CountStr.equals("")) {
+				float lat = Float.parseFloat(latStr);
+				float lng = Float.parseFloat(lngStr);
+				int may21Count = Integer.parseInt(may2021CountStr);
+				int may19Count = Integer.parseInt(may2019CountStr);
+
+
+				Location markerLocation = new Location(lat, lng);
+				float markerRadius = Math.abs(may21Count - may19Count) / (may2021Average + may2019Average) * SCALE_FACTOR;
+				float[] markerColor = {(may21Count > may19Count) ? 0 : 255, 0, (may19Count > may21Count) ? 0 : 255, 127};
+				MarkerBubble marker = new MarkerBubble(this, markerLocation, markerRadius, markerColor);
+				map.addMarker(marker);
+			}	
+		}
 	}
 
 	/**
@@ -167,9 +263,9 @@ public class App extends PApplet {
 	 * 
 	 * @param data
 	 */
-	public void customVisualization1(String[][] data) {
+	public void customVisualization2007Morning(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
-		mapTitle = "Enter Custom Map 1 Title Here";
+		mapTitle = "Show May 2007 Morning Pedestrian Counts";
 		// complete this method		
 	}
 
@@ -179,9 +275,9 @@ public class App extends PApplet {
 	 * 
 	 * @param data
 	 */
-	public void customVisualization2(String[][] data) {
+	public void customVisualization2007Evening(String[][] data) {
 		clearMap(); // clear any markers previously placed on the map
-		mapTitle = "Enter Custom Map 2 Title Here";
+		mapTitle = "Show May 2007 Evening Pedestrian Counts";
 		// complete this method	
 	}
 
@@ -192,34 +288,44 @@ public class App extends PApplet {
 	 * @return A String array, where each String contains the text of a line of the file, with its line break removed.
 	 * @throws FileNotFoundException
 	 */
-	public String[] getLinesFromFile(String filepath) {
-		String path = "data/PedCountLocationsMay2015.csv";
+	public String[] getLinesFromFile(String filepath) throws IOException {
+		List<String> lines = new ArrayList<>();
 
-		try{
-			BufferedReader reader = new BufferedReader(new FileReader(path));
-			List<String> lines = new ArrayList<>();
-			String line = null;
+		try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+			String line = reader.readLine();
 
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
+			while (line != null) {
+				lines.add(line.replace("\n", "").replace("\r", ""));
+				line = reader.readLine();
 			}
-			//make new empty array
-			String[][] a = new String[89][115];
-			//iterate through all lines and store each line into an array
-			for(int i = 0; i < lines.get(0).length(); i++){
-				 a[i] = lines.get(i).split(",");
-				 System.out.println(a[0][0]);
-			}
-			reader.close();
-		} catch (FileNotFoundException e){
-			System.out.println("File not found exception");
-		} catch (IOException e){
-			System.out.println("IO Exception");
+		// String path = "data/PedCountLocationsMay2015.csv";
+		// String line = null;
+
+		// try{
+		// 	BufferedReader reader = new BufferedReader(new FileReader(path));
+		// 	List<String> lines = new ArrayList<>();
+
+		// 	while ((line = reader.readLine()) != null) {
+		// 		lines.add(line);
+		// 	}
+		// 	//make new empty array
+		// 	String[][] a = new String[89][115];
+		// 	//iterate through all lines and store each line into an array
+		// 	for(int i = 0; i < lines.get(0).length(); i++){
+		// 		 a[i] = lines.get(i).split(",");
+		// 		 System.out.println(a[0][0]);
+		// 	}
+		// 	reader.close();
+		// } catch (FileNotFoundException e){
+		// 	System.out.println("File not found exception");
+		// } catch (IOException e){
+		// 	System.out.println("IO Exception");
+		// }
+		// // delete the two lines above... they are placeholder only
+		// // complete this method
+		// return null;
+		return lines.toArray(new String[lines.size()]);
 		}
-		String[] lines = {"foo", "bar"};
-		return lines;
-		// delete the two lines above... they are placeholder only
-		// complete this method
 	}
 
 	/**
@@ -232,30 +338,57 @@ public class App extends PApplet {
 	 * @return A two-dimensional String array, where each inner array contains the data from one of the lines, split by commas.
 	 */
 	public String[][] getDataFromLines(String[] lines) {
-		String path = "data/PedCountLocationsMay2015.csv";
-		String[][] data = new String[lines.length][];
-
-		for(int row = 0; row <lines.length; row++){
-			data[row] = lines[row].split(",");
+		List<String[]> dataRows = new ArrayList<>();
+		for (int j = 0; j < lines.length; j++) {
+			String[] fields = lines[j].split(",", -1);
+			if(j == 0){
+				continue;
+			} else if(j == 25){
+				System.out.println("J is 25");
+			}
+			String[] point = processPoint(fields[0]);
+			String[] newFields = new String[fields.length + 1];
+			newFields[0] = point[1];
+			for(int i = 1; i < fields.length; i++){
+				newFields[i+1] = fields[i];
+			}
+			newFields[1] = point[2];
+			if (geospatialData(newFields)) {
+				dataRows.add(newFields);
+			}
 		}
-		System.out.println("HELLO");
-		// System.out.println(data);
-		return(data);
-	}
-		// hint: ultimately, you want this function to return data structured something like the following (you can structure your array differently if you prefer)
-		// in this example, the geospatial Point data (latitude and longitude), which is one field in the original CSV file, has been broken up into two fields... you would be wise to do this too.
-		String[][] allLines = { 
-			// the first two values are the latitude and longitude... these were a single field in the original CSV file
-			{"-73.90459140730678","40.87919896648574","Bronx","1","1","Broadway","West 231st Street","Naples Terrace","N","1189","4094","2508","734","2646","2939","802","4015","2631","1125","4310","3420","1001","3475","2832","991","4262","2469","1010","3609","3128","863","4119","2217","997","4440","2687","1328","3820","2428","1288","3328","3365","1268","4315","2276","1210","4710","3825","1206","4590","3008","1220","4384","2641","1450","4646","2996","1788","4980","3033","1204","4520","2999","1246","4531","2686","1309","3642","2830","1916","5893","2776","1111","4044","2731","1271","4502","2899","1708","4464","2967","","","","486","2843","1754","630","3262","4710"},
-			{"-73.92188432870218","40.82662794123294","Bronx","2","2","East 161st Street","Grand Concourse","Sheridan Avenue","Y","1511","3184","1971","1855","3754","1183","1136","2638","1522","1939","3283","1383","1351","3111","1304","1227","3137","2762","2077","3283","1409","1007","3069","1477","1734","3333","1772","2051","3525","1752","1233","1875","1912","2113","4099","1970","2278","4215","2288","2071","3890","1832","2206","4363","2315","1949","4435","2388","2318","4589","2483","2005","4790","2512","2053","4721","2311","2109","5485","2548","1848","4920","2143","2389","5952","2832","1749","5148","2156","2006","4723","1604","1702","4347","1576","780","1892","1287","1405","2097","8410"},
-			{"-73.92785197149036","40.80034506063933","Harlem River Bridges","113","113","Triborough Bridge (Manhattan span)","midpoint","","N","17","35","34","11","44","24","30","44","16","30","200","23","37","44","23","20","174","66","12","39","55","36","205","64","10","45","11","7","119","39","26","21","49","6","33","15","12","42","16","13","31","40","14","32","10","21","42","20","19","36","14","17","40","28","10","18","8","21","43","21","7","19","5","16","38","24","6","14","4","12","15","6","","","","","","","23","52","6437"},
-			{"-73.93686603590555","40.78611224350854","Harlem River Bridges","114","114","Wards Island Bridge","midpoint","","N","57","207","71","63","186","149","45","203","113","80","190","120","33","213","324","43","151","173","37","169","674","77","205","913","32","66","70","62","189","936","78","249","439","102","460","569","191","455","435","92","514","594","164","527","312","123","458","564","189","539","312","117","424","581","160","484","300","159","490","587","169","493","312","178","519","608","187","543","351","213","490","263","","","","","","","237","405","6353"}
-		};
+		return dataRows.toArray(new String[0][]);
+	// 	String[][] data = new String[lines.length][];
 
+	// 	for(int row = 0; row <lines.length; row++){
+	// 		data[row] = lines[row].split(",");
+	// 	}
+
+	// 	System.out.println(data);
+	// 	return(data);
+	// }
+	// 	// hint: ultimately, you want this function to return data structured something like the following (you can structure your array differently if you prefer)
+	// 	// in this example, the geospatial Point data (latitude and longitude), which is one field in the original CSV file, has been broken up into two fields... you would be wise to do this too.
+	// 	String[][] allLines = { 
+	// 		// the first two values are the latitude and longitude... these were a single field in the original CSV file
+	// 		{"-73.90459140730678","40.87919896648574","Bronx","1","1","Broadway","West 231st Street","Naples Terrace","N","1189","4094","2508","734","2646","2939","802","4015","2631","1125","4310","3420","1001","3475","2832","991","4262","2469","1010","3609","3128","863","4119","2217","997","4440","2687","1328","3820","2428","1288","3328","3365","1268","4315","2276","1210","4710","3825","1206","4590","3008","1220","4384","2641","1450","4646","2996","1788","4980","3033","1204","4520","2999","1246","4531","2686","1309","3642","2830","1916","5893","2776","1111","4044","2731","1271","4502","2899","1708","4464","2967","","","","486","2843","1754","630","3262","4710"},
+	// 		{"-73.92188432870218","40.82662794123294","Bronx","2","2","East 161st Street","Grand Concourse","Sheridan Avenue","Y","1511","3184","1971","1855","3754","1183","1136","2638","1522","1939","3283","1383","1351","3111","1304","1227","3137","2762","2077","3283","1409","1007","3069","1477","1734","3333","1772","2051","3525","1752","1233","1875","1912","2113","4099","1970","2278","4215","2288","2071","3890","1832","2206","4363","2315","1949","4435","2388","2318","4589","2483","2005","4790","2512","2053","4721","2311","2109","5485","2548","1848","4920","2143","2389","5952","2832","1749","5148","2156","2006","4723","1604","1702","4347","1576","780","1892","1287","1405","2097","8410"},
+	// 		{"-73.92785197149036","40.80034506063933","Harlem River Bridges","113","113","Triborough Bridge (Manhattan span)","midpoint","","N","17","35","34","11","44","24","30","44","16","30","200","23","37","44","23","20","174","66","12","39","55","36","205","64","10","45","11","7","119","39","26","21","49","6","33","15","12","42","16","13","31","40","14","32","10","21","42","20","19","36","14","17","40","28","10","18","8","21","43","21","7","19","5","16","38","24","6","14","4","12","15","6","","","","","","","23","52","6437"},
+	// 		{"-73.93686603590555","40.78611224350854","Harlem River Bridges","114","114","Wards Island Bridge","midpoint","","N","57","207","71","63","186","149","45","203","113","80","190","120","33","213","324","43","151","173","37","169","674","77","205","913","32","66","70","62","189","936","78","249","439","102","460","569","191","455","435","92","514","594","164","527","312","123","458","564","189","539","312","117","424","581","160","484","300","159","490","587","169","493","312","178","519","608","187","543","351","213","490","263","","","","","","","237","405","6353"}
+	// 	};
+	}
+	private boolean geospatialData(String[] fields) {
+		return true;
+	}
+
+	private String[] processPoint(String point){
+		String[] split1 = point.split(" ");
+		split1[1] = split1[1].substring(1);
+		split1[2] = split1[2].substring(0, split1[2].length()-1);
+		return split1;
+	}
 
 	
-
-
 	/****************************************************************/
 	/**** YOU WILL MOST LIKELY NOT NEED TO EDIT ANYTHING BELOW HERE */
 	/****               Proceed at your own peril!                  */
